@@ -84,6 +84,22 @@
     <script src="assets/show.js"></script>
     <script src="assets/manifest.js"></script>
     <script src="assets/cache.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Odczytujemy zdjęcie
+    const savedPhoto = localStorage.getItem('saved_image'); // to z poprzedniego kroku
+    if (savedPhoto) {
+        // Tu podaj klasę lub ID obrazka na stronie show.html, gdzie ma być foto
+        const displayImg = document.querySelector('.photo_class_na_nowej_stronie'); 
+        if(displayImg) displayImg.src = savedPhoto;
+    }
+
+    // Odczytujemy tekst
+    const nameDisplay = document.querySelector('.name_class_na_nowej_stronie');
+    if(nameDisplay) nameDisplay.innerText = localStorage.getItem('user_name');
+});
+</script>
+
   </body>
 </html>
 
