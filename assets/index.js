@@ -1,12 +1,12 @@
+// Obsługa rozwijanego menu (Płeć)
 var selector = document.querySelector(".selector_box");
-selector.addEventListener("click", () => {
-  if (selector.classList.contains("selector_open")) {
-    selector.classList.remove("selector_open");
-  } else {
-    selector.classList.add("selector_open");
-  }
-});
+if (selector) {
+  selector.addEventListener("click", () => {
+    selector.classList.toggle("selector_open");
+  });
+}
 
+// Usuwanie błędów przy kliknięciu w datę
 document.querySelectorAll(".date_input").forEach((element) => {
   element.addEventListener("click", () => {
     document.querySelector(".date").classList.remove("error_shown");
@@ -15,6 +15,7 @@ document.querySelectorAll(".date_input").forEach((element) => {
 
 var sex = "m";
 
+// Wybór opcji płci
 document.querySelectorAll(".selector_option").forEach((option) => {
   option.addEventListener("click", () => {
     sex = option.id;
@@ -22,12 +23,13 @@ document.querySelectorAll(".selector_option").forEach((option) => {
   });
 });
 
+// Obsługa zdjęcia
 var upload = document.querySelector(".upload");
-
 var imageInput = document.createElement("input");
 imageInput.type = "file";
-imageInput.accept = ".jpeg,.png,.gif";
+imageInput.accept = "image/*";
 
+// Usuwanie błędów przy polach tekstowych
 document.querySelectorAll(".input_holder").forEach((element) => {
   var input = element.querySelector(".input");
   input.addEventListener("click", () => {
@@ -40,91 +42,80 @@ upload.addEventListener("click", () => {
   upload.classList.remove("error_shown");
 });
 
+// PRZETWARZANIE ZDJĘCIA (Lokalne - najszybsze na Vercel)
 imageInput.addEventListener("change", (event) => {
   upload.classList.remove("upload_loaded");
   upload.classList.add("upload_loading");
 
-  upload.removeAttribute("selected");
-
   var file = imageInput.files[0];
-  var data = new FormData();
-  data.append("image", file);
-
-  fetch("	https://api.imgur.com/3/image", {
-    method: "POST",
-    headers: {
-      Authorization: "Client-ID e4d98a899c8c946",
-    },
-    body: data,
-  })
-    .then((result) => result.json())
-    .then((response) => {
-      var url = response.data.link;
-      upload.classList.remove("error_shown");
-      upload.setAttribute("selected", url);
-      upload.classList.add("upload_loaded");
-      upload.classList.remove("upload_loading");
-      upload.querySelector(".upload_uploaded").src = url;
-    });
+  var reader = new FileReader();
+  
+  reader.onload = (e) => {
+    var url = e.target.result;
+    upload.setAttribute("selected", url);
+    upload.classList.remove("upload_loading");
+    upload.classList.add("upload_loaded");
+    upload.querySelector(".upload_uploaded").src = url;
+  };
+  reader.readAsDataURL(file);
 });
 
+// PRZYCISK "WEJDŹ" (Przekazywanie wszystkich danych)
 document.querySelector(".go").addEventListener("click", () => {
   var empty = [];
+  var data = {};
 
-  var params = new URLSearchParams();
-
-  params.set("sex", sex);
+  data["sex"] = sex;
+  
   if (!upload.hasAttribute("selected")) {
     empty.push(upload);
     upload.classList.add("error_shown");
   } else {
-    params.set("image", upload.getAttribute("selected"));
+    data["image"] = upload.getAttribute("selected");
   }
 
+  // Zbieranie daty
   const day = document.getElementById("day");
   const month = document.getElementById("month");
   const year = document.getElementById("year");
 
   [day, month, year].forEach((input) => {
     if (isEmpty(input.value)) {
-      dateEmpty = true;
+      document.querySelector(".date").classList.add("error_shown");
+      empty.push(input);
     } else {
-      params.set(input.id, input.value);
+      data[input.id] = input.value;
     }
   });
 
+  // Zbieranie reszty pól
   document.querySelectorAll(".input_holder").forEach((element) => {
     var input = element.querySelector(".input");
-
     if (isEmpty(input.value)) {
       empty.push(element);
       element.classList.add("error_shown");
     } else {
-      params.set(input.id, input.value);
+      data[input.id] = input.value;
     }
   });
 
   if (empty.length != 0) {
     empty[0].scrollIntoView();
   } else {
-    forwardToId(params);
+    // ZAPIS I PRZEJŚCIE
+    localStorage.setItem('userData', JSON.stringify(data));
+    location.href = "id.html"; // Przekierowanie na Twoją stronę z dowodem
   }
 });
 
 function isEmpty(value) {
-  let pattern = /^\s*$/;
-  return pattern.test(value);
+  return /^\s*$/.test(value || "");
 }
 
-function forwardToId(params) {
-  location.href = "/id?" + params;
-}
-
+// Obsługa instrukcji (guide)
 var guide = document.querySelector(".guide_holder");
-guide.addEventListener("click", () => {
-  if (guide.classList.contains("unfolded")) {
-    guide.classList.remove("unfolded");
-  } else {
-    guide.classList.add("unfolded");
-  }
-});
+if (guide) {
+  guide.addEventListener("click", () => {
+    guide.classList.toggle("unfolded");
+  });
+}
