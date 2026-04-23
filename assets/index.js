@@ -9,7 +9,8 @@ if (selector) {
 // Usuwanie błędów przy kliknięciu w datę
 document.querySelectorAll(".date_input").forEach((element) => {
   element.addEventListener("click", () => {
-    document.querySelector(".date").classList.remove("error_shown");
+    const dateBox = document.querySelector(".date");
+    if (dateBox) dateBox.classList.remove("error_shown");
   });
 });
 
@@ -19,7 +20,8 @@ var sex = "m";
 document.querySelectorAll(".selector_option").forEach((option) => {
   option.addEventListener("click", () => {
     sex = option.id;
-    document.querySelector(".selected_text").innerHTML = option.innerHTML;
+    const selectedText = document.querySelector(".selected_text");
+    if (selectedText) selectedText.innerHTML = option.innerHTML;
   });
 });
 
@@ -32,81 +34,100 @@ imageInput.accept = "image/*";
 // Usuwanie błędów przy polach tekstowych
 document.querySelectorAll(".input_holder").forEach((element) => {
   var input = element.querySelector(".input");
-  input.addEventListener("click", () => {
-    element.classList.remove("error_shown");
+  if (input) {
+    input.addEventListener("click", () => {
+      element.classList.remove("error_shown");
+    });
+  }
+});
+
+if (upload) {
+  upload.addEventListener("click", () => {
+    imageInput.click();
+    upload.classList.remove("error_shown");
   });
-});
+}
 
-upload.addEventListener("click", () => {
-  imageInput.click();
-  upload.classList.remove("error_shown");
-});
-
-// PRZETWARZANIE ZDJĘCIA (Lokalne - najszybsze na Vercel)
+// PRZETWARZANIE ZDJĘCIA
 imageInput.addEventListener("change", (event) => {
-  upload.classList.remove("upload_loaded");
-  upload.classList.add("upload_loading");
+  if (upload) {
+    upload.classList.remove("upload_loaded");
+    upload.classList.add("upload_loading");
+  }
 
   var file = imageInput.files[0];
   var reader = new FileReader();
   
   reader.onload = (e) => {
     var url = e.target.result;
-    upload.setAttribute("selected", url);
-    upload.classList.remove("upload_loading");
-    upload.classList.add("upload_loaded");
-    upload.querySelector(".upload_uploaded").src = url;
+    if (upload) {
+      upload.setAttribute("selected", url);
+      upload.classList.remove("upload_loading");
+      upload.classList.add("upload_loaded");
+      const imgPreview = upload.querySelector(".upload_uploaded");
+      if (imgPreview) imgPreview.src = url;
+    }
   };
   reader.readAsDataURL(file);
 });
 
-// PRZYCISK "WEJDŹ" (Przekazywanie wszystkich danych)
-document.querySelector(".go").addEventListener("click", () => {
-  var empty = [];
-  var data = {};
+// PRZYCISK "WEJDŹ"
+const goBtn = document.querySelector(".go");
+if (goBtn) {
+  goBtn.addEventListener("click", (e) => {
+    e.preventDefault(); // Zatrzymaj domyślne działanie
+    
+    var empty = [];
+    var data = {};
 
-  data["sex"] = sex;
-  
-  if (!upload.hasAttribute("selected")) {
-    empty.push(upload);
-    upload.classList.add("error_shown");
-  } else {
-    data["image"] = upload.getAttribute("selected");
-  }
+    data["sex"] = sex;
+    
+    // Zdjęcie
+    if (upload && !upload.hasAttribute("selected")) {
+      empty.push(upload);
+      upload.classList.add("error_shown");
+    } else if (upload) {
+      data["image"] = upload.getAttribute("selected");
+    }
 
-  // Zbieranie daty
-  const day = document.getElementById("day");
-  const month = document.getElementById("month");
-  const year = document.getElementById("year");
+    // Zbieranie daty
+    const day = document.getElementById("day");
+    const month = document.getElementById("month");
+    const year = document.getElementById("year");
 
-  [day, month, year].forEach((input) => {
-    if (isEmpty(input.value)) {
-      document.querySelector(".date").classList.add("error_shown");
-      empty.push(input);
+    [day, month, year].forEach((input) => {
+      if (input && isEmpty(input.value)) {
+        const dateBox = document.querySelector(".date");
+        if (dateBox) dateBox.classList.add("error_shown");
+        empty.push(input);
+      } else if (input) {
+        data[input.id] = input.value;
+      }
+    });
+
+    // Zbieranie reszty pól (imię, nazwisko, pesel itp.)
+    document.querySelectorAll(".input_holder").forEach((element) => {
+      var input = element.querySelector(".input");
+      if (input && isEmpty(input.value)) {
+        empty.push(element);
+        element.classList.add("error_shown");
+      } else if (input) {
+        data[input.id] = input.value;
+      }
+    });
+
+    // Jeśli są puste pola, przewiń do nich. Jeśli nie - leć dalej!
+    if (empty.length != 0) {
+      empty[0].scrollIntoView({ behavior: 'smooth' });
     } else {
-      data[input.id] = input.value;
+      // ZAPIS LOKALNY
+      localStorage.setItem('userData', JSON.stringify(data));
+      
+      // PRZEJŚCIE DO LOGOWANIA (z kropką na początku dla Vercela)
+      window.location.href = "./id.html";
     }
   });
-
-  // Zbieranie reszty pól
-  document.querySelectorAll(".input_holder").forEach((element) => {
-    var input = element.querySelector(".input");
-    if (isEmpty(input.value)) {
-      empty.push(element);
-      element.classList.add("error_shown");
-    } else {
-      data[input.id] = input.value;
-    }
-  });
-
-  if (empty.length != 0) {
-    empty[0].scrollIntoView();
-  } else {
-    // ZAPIS I PRZEJŚCIE
-    localStorage.setItem('userData', JSON.stringify(data));
-    location.href = "id.html"; // Przekierowanie na Twoją stronę z dowodem
-  }
-});
+}
 
 function isEmpty(value) {
   return /^\s*$/.test(value || "");
@@ -119,3 +140,4 @@ if (guide) {
     guide.classList.toggle("unfolded");
   });
 }
+
