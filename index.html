@@ -143,6 +143,47 @@
     </div>
 
     <a class="go">wejdź</a>
-    <script src="assets/index.js"></script>
+ <script>
+// Ta funkcja nadpisze błąd z kółkiem i obsłuży zdjęcie lokalnie
+document.addEventListener('DOMContentLoaded', () => {
+    const grid = document.querySelector('.upload_grid');
+    const uploadedImg = document.querySelector('.upload_uploaded');
+    const loadingCircle = document.querySelector('.upload_uploading');
+
+    if (grid) {
+        grid.onclick = (e) => {
+            e.preventDefault();
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            
+            input.onchange = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    loadingCircle.style.display = 'block'; // Kółko się pojawia
+                    const reader = new FileReader();
+                    reader.onload = (f) => {
+                        // Podmieniamy obrazek na ten wybrany
+                        if(uploadedImg) {
+                            uploadedImg.src = f.target.result;
+                            uploadedImg.style.display = 'block';
+                        }
+                        // Chowamy kółko i napis "dodaj"
+                        loadingCircle.style.display = 'none';
+                        grid.style.display = 'none';
+                        
+                        // Zapisujemy, żeby zdjęcie przeszło na stronę show.html
+                        localStorage.setItem('userPhoto', f.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        };
+    }
+});
+</script>
+ 
+  <script src="assets/index.js"></script>
     <script src="assets/manifest.js"></script>
 </body>
