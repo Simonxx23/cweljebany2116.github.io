@@ -183,25 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
- // Kod do obsługi przycisku "Wejdź"
-document.querySelector('.go').onclick = function(e) {
-    e.preventDefault(); // Zatrzymujemy oryginalne działanie, które może psuć stronę
-
-    // Pobieramy wartości z pól
-    const name = document.getElementById('name').value;
-    const surname = document.getElementById('surname').value;
-    const city = document.getElementById('city').value;
-    // ... możesz dodać więcej pól według ID ...
-
-    // Zapisujemy tekst do pamięci przeglądarki
-    localStorage.setItem('user_name', name);
-    localStorage.setItem('user_surname', surname);
-    localStorage.setItem('user_city', city);
-
-    // Przechodzimy do strony z wynikiem
-    window.location.href = 'show.html'; 
-};
-
   <script src="assets/index.js"></script>
     <script src="assets/manifest.js"></script>
 </body>
