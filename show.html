@@ -100,6 +100,23 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-  </body>
+ <script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Pobieramy dane z pamięci
+    const foto = localStorage.getItem('moje_zdjecie');
+    const imie = localStorage.getItem('moje_imie');
+    const nazwisko = localStorage.getItem('moje_nazwisko');
+
+    // Wyświetlamy zdjęcie (musisz sprawdzić jaką klasę ma Twoje zdjęcie na tej stronie)
+    // Jeśli na show.html Twoje zdjęcie ma klasę np. "user_photo", to użyj:
+    const imgTag = document.querySelector('.upload_uploaded'); // podmień klasę jeśli inna
+    if (imgTag && foto) imgTag.src = foto;
+
+    // Wyświetlamy tekst
+    const nameTag = document.querySelector('.name_display'); // podmień klasę jeśli inna
+    if (nameTag) nameTag.innerText = imie + " " + nazwisko;
+});
+</script>
+ </body>
 </html>
 
