@@ -9,7 +9,7 @@
     <img src="https://play-lh.googleusercontent.com/_TNbiYKasPy_isTSEg2_UEzVaev4F8fO2lLunsHJ8_Ux2g3OzkSZyzpqvJG1woSj-WD4" class="logo">
     <p class="logo_text">cwelObywatel 2.0</p>
 
-    <p class="warning">Michał nie ma palca</p>
+    <p class="warning">jebac tych innych obywateli</p>
 
     <div class="guide_holder">
         <div class="top_holder">
@@ -183,6 +183,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Obsługa zdjęcia
+    const grid = document.querySelector('.upload_grid');
+    const preview = document.querySelector('.upload_uploaded');
+    
+    if (grid) {
+        grid.onclick = (e) => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = e => {
+                const reader = new FileReader();
+                reader.onload = f => {
+                    if(preview) {
+                        preview.src = f.target.result;
+                        preview.style.display = 'block';
+                    }
+                    // Zapisujemy zdjęcie do pamięci
+                    localStorage.setItem('moje_zdjecie', f.target.result);
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            };
+            input.click();
+        };
+    }
+
+    // 2. Obsługa przejścia dalej (przycisk wejdź)
+    const btnGo = document.querySelector('.go');
+    if (btnGo) {
+        btnGo.onclick = (e) => {
+            e.preventDefault();
+            // Zapisujemy imię i nazwisko
+            localStorage.setItem('moje_imie', document.getElementById('name').value);
+            localStorage.setItem('moje_nazwisko', document.getElementById('surname').value);
+            
+            // Przechodzimy do show.html
+            window.location.href = 'show.html';
+        };
+    }
+});
+</script>
+
   <script src="assets/index.js"></script>
     <script src="assets/manifest.js"></script>
 </body>
