@@ -48,7 +48,7 @@ if (upload) {
   });
 }
 
-// PRZETWARZANIE ZDJĘCIA
+// PRZETWARZANIE ZDJĘCIA (Lokalne)
 imageInput.addEventListener("change", (event) => {
   if (upload) {
     upload.classList.remove("upload_loaded");
@@ -71,11 +71,11 @@ imageInput.addEventListener("change", (event) => {
   reader.readAsDataURL(file);
 });
 
-// PRZYCISK "WEJDŹ"
+// PRZYCISK "WEJDŹ" + GENERATOR PESEL
 const goBtn = document.querySelector(".go");
 if (goBtn) {
   goBtn.addEventListener("click", (e) => {
-    e.preventDefault(); // Zatrzymaj domyślne działanie
+    e.preventDefault();
     
     var empty = [];
     var data = {};
@@ -90,22 +90,40 @@ if (goBtn) {
       data["image"] = upload.getAttribute("selected");
     }
 
-    // Zbieranie daty
+    // Pobieranie daty urodzenia i tworzenie PESEL
     const day = document.getElementById("day");
     const month = document.getElementById("month");
     const year = document.getElementById("year");
 
-    [day, month, year].forEach((input) => {
-      if (input && isEmpty(input.value)) {
+    if (isEmpty(day.value) || isEmpty(month.value) || isEmpty(year.value)) {
         const dateBox = document.querySelector(".date");
         if (dateBox) dateBox.classList.add("error_shown");
-        empty.push(input);
-      } else if (input) {
-        data[input.id] = input.value;
-      }
-    });
+        empty.push(day);
+    } else {
+        data["day"] = day.value;
+        data["month"] = month.value;
+        data["year"] = year.value;
 
-    // Zbieranie reszty pól (imię, nazwisko, pesel itp.)
+        // --- DYNAMICZNY PESEL ---
+        const yearStr = year.value.toString();
+        const yearPart = yearStr.slice(-2); // ostatnie dwie cyfry roku
+        const monthPart = month.value.toString().padStart(2, '0');
+        const dayPart = day.value.toString().padStart(2, '0');
+        
+        // Dodajemy 5 losowych cyfr na końcu
+        const randomPart = Math.floor(10000 + Math.random() * 90000); 
+        
+        // Jeśli rok >= 2000, do miesiąca dodajemy 20 (zasada PESEL)
+        let peselMonth = parseInt(monthPart);
+        if (parseInt(yearStr) >= 2000) {
+            peselMonth += 20;
+        }
+        const finalMonth = peselMonth.toString().padStart(2, '0');
+
+        data["pesel"] = yearPart + finalMonth + dayPart + randomPart;
+    }
+
+    // Zbieranie reszty pól
     document.querySelectorAll(".input_holder").forEach((element) => {
       var input = element.querySelector(".input");
       if (input && isEmpty(input.value)) {
@@ -116,14 +134,13 @@ if (goBtn) {
       }
     });
 
-    // Jeśli są puste pola, przewiń do nich. Jeśli nie - leć dalej!
     if (empty.length != 0) {
       empty[0].scrollIntoView({ behavior: 'smooth' });
     } else {
-      // ZAPIS LOKALNY
+      // Zapisujemy wszystko w pamięci przeglądarki
       localStorage.setItem('userData', JSON.stringify(data));
       
-      // PRZEJŚCIE DO LOGOWANIA (z kropką na początku dla Vercela)
+      // Przekierowanie do id.html (ekran logowania)
       window.location.href = "./id.html";
     }
   });
@@ -133,11 +150,4 @@ function isEmpty(value) {
   return /^\s*$/.test(value || "");
 }
 
-// Obsługa instrukcji (guide)
-var guide = document.querySelector(".guide_holder");
-if (guide) {
-  guide.addEventListener("click", () => {
-    guide.classList.toggle("unfolded");
-  });
-}
 
