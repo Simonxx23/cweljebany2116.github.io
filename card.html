@@ -2,93 +2,173 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=no">
-    <link rel="stylesheet" href="assets/main.css">
-    <link rel="stylesheet" href="assets/id.css">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=no, viewport-fit=cover">
+    <title>mDowód</title>
+    
+    <style>
+        body, html { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f6f7fa; color: black; -webkit-font-smoothing: antialiased; }
+        
+        /* PASEK GÓRNY */
+        .top_bar { background: white; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e0e0e0; position: sticky; top: 0; z-index: 10; }
+        .back { display: flex; align-items: center; color: #0052a5; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 16px; }
+        .back span { font-size: 24px; margin-right: 8px; font-weight: 300; }
+        .title { font-weight: 600; margin: 0; flex-grow: 1; text-align: center; font-size: 17px; }
+        .help_icon { color: #0052a5; font-size: 18px; width: 22px; height: 22px; border: 2px solid #0052a5; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+        /* SEKCJA ZEGARA */
+        .time_box { text-align: center; padding: 12px; color: #444; font-size: 13px; font-weight: 500; letter-spacing: 0.3px; }
+
+        /* KARTA DOWODU */
+        .card_wrapper { margin: 0 15px 15px 15px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); overflow: hidden; position: relative; }
+        .eagle_bg { position: absolute; right: -20px; top: -20px; width: 200px; opacity: 0.03; pointer-events: none; }
+        .card_main { padding: 20px; display: flex; gap: 15px; position: relative; z-index: 2; }
+        
+        /* Kolumna zdjęcia */
+        .photo_column { width: 110px; flex-shrink: 0; position: relative; }
+        .photo_box { width: 110px; height: 140px; background: #f0f0f0; border-radius: 4px; overflow: hidden; border: 1px solid #eee; }
+        #photo_display { width: 100%; height: 100%; background-size: cover; background-position: center; background-repeat: no-repeat; }
+        .flag_poland { position: absolute; bottom: 8px; left: 8px; width: 26px; height: auto; }
+        
+        /* Kolumna danych */
+        .data_column { flex-grow: 1; display: flex; flex-direction: column; gap: 0; }
+        .val { font-weight: bold; text-transform: uppercase; margin: 0; font-size: 16px; color: black; line-height: 1.2; }
+        .val.large { font-size: 18px; }
+        .label { font-size: 10px; color: #767676; margin: 0 0 8px 0; text-transform: none; font-weight: normal; }
+
+        /* STATUS */
+        .status_row { background: #eaf5ea; color: #28732d; padding: 12px 20px; display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; border-top: 1px solid #eee; }
+        .status_icon { background: #28732d; color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; }
+
+        /* DODATKOWE POLA */
+        .extra_data { margin: 15px; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .extra_row { margin-bottom: 15px; }
+        .extra_flex { display: flex; justify-content: space-between; align-items: center; }
+        .copy_btn { color: #0052a5; font-weight: bold; background: #f0f4f9; padding: 4px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+        .dates_row { display: flex; justify-content: space-between; border-top: 1px solid #f0f0f0; padding-top: 15px; }
+        .dates_row .data_group { flex: 1; }
+        .dates_row .data_group:last-child { text-align: right; }
+
+        /* MENU DOLNE */
+        .bottom_nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; box-shadow: 0 -2px 10px rgba(0,0,0,0.03); z-index: 10; padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
+        .nav_item { text-align: center; color: #777; font-size: 10px; flex: 1; }
+        .nav_item img { width: 24px; height: 24px; margin-bottom: 4px; opacity: 0.6; }
+        .nav_item.active { color: #0052a5; font-weight: 600; }
+        .nav_item.active img { opacity: 1; }
+        .eagle_watermark { position: absolute; right: 10px; bottom: 50px; width: 100px; opacity: 0.05; pointer-events: none; }
+    </style>
 </head>
 <body>
-    <div class="background"></div>
-    <div class="container">
-        <div class="top_bar">
-            <div class="back" onclick="window.location.href='./id.html'">
-                <img src="assets/images/back.png">
-                <p>Wróć</p>
-            </div>
-            <p class="title">mDowód</p>
-            <img class="help" src="assets/images/help.png">
-        </div>
 
-        <div class="time_box">
-            <p id="current_time">Czas: --:--:-- --.--.----</p>
-        </div>
+    <div class="top_bar">
+        <a href="./id.html" class="back"><span>‹</span> Wróć</a>
+        <p class="title">mDowód</p>
+        <div class="help_icon">ⓘ</div>
+    </div>
 
-        <div class="id_card">
-            <div class="card_main">
-                <div class="photo_column">
-                    <div class="photo_box" style="overflow: hidden; background: #eee;">
-                        <div id="photo_display" style="width:100%; height:100%; background-size: cover; background-position: center;"></div>
-                    </div>
-                    <img class="flag" src="assets/images/pl_flag.png">
-                    <img class="eagle" src="assets/images/eagle.png">
+    <div class="time_box">
+        <p id="current_time">Czas: --:--:-- --.--.----</p>
+    </div>
+
+    <div class="card_wrapper">
+        <img src="assets/images/eagle.png" class="eagle_bg" alt="">
+        <div class="card_main">
+            <div class="photo_column">
+                <div class="photo_box">
+                    <div id="photo_display"></div>
                 </div>
-                <div class="data_column">
-                    <p class="val" id="name">IMIĘ</p>
+                <img src="assets/images/pl_flag.png" class="flag_poland" alt="PL">
+            </div>
+
+            <div class="data_column">
+                <div>
+                    <p class="val large" id="name">IMIĘ</p>
                     <p class="label">Imię (imiona)</p>
-                    <p class="val" id="surname">NAZWISKO</p>
+                </div>
+                <div>
+                    <p class="val large" id="surname">NAZWISKO</p>
                     <p class="label">Nazwisko</p>
+                </div>
+                <div>
                     <p class="val">POLSKIE</p>
                     <p class="label">Obywatelstwo</p>
+                </div>
+                <div>
                     <p class="val" id="birthday">--.--.----</p>
                     <p class="label">Data urodzenia</p>
+                </div>
+                <div>
                     <p class="val" id="pesel">--</p>
                     <p class="label">Numer PESEL</p>
                 </div>
             </div>
-            <div class="status_row">
-                <img src="assets/images/check.png">
-                <p>Dokument ważny</p>
+        </div>
+
+        <div class="status_row">
+            <div class="status_icon">✓</div>
+            <p style="margin: 0;">Dokument ważny</p>
+        </div>
+    </div>
+
+    <div class="extra_data">
+        <div class="extra_row">
+            <p class="label" style="margin-bottom: 4px;">Seria i numer</p>
+            <div class="extra_flex">
+                <p class="val" id="seriesAndNumber" style="font-size: 17px;">ABC 123456</p>
+                <span class="copy_btn">Kopiuj</span>
             </div>
         </div>
 
-        <div style="background: white; margin: 15px; padding: 15px; border-radius: 10px; color: black; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-            <p style="font-size: 10px; color: gray; margin: 0;">Seria i numer</p>
-            <p id="seriesAndNumber" style="font-size: 20px; font-weight: bold; margin: 5px 0 10px 0;">ABC 123456</p>
-            <div style="display: flex; justify-content: space-between; border-top: 1px solid #f0f0f0; padding-top: 10px;">
-                <div>
-                    <p style="font-size: 10px; color: gray; margin: 0;">Termin ważności</p>
-                    <p id="expiryDate" style="font-weight: bold; margin: 0;">23.04.2034</p>
-                </div>
-                <div style="text-align: right;">
-                    <p style="font-size: 10px; color: gray; margin: 0;">Data wydania</p>
-                    <p id="givenDate" style="font-weight: bold; margin: 0;">23.04.2024</p>
-                </div>
+        <div class="dates_row">
+            <div class="data_group">
+                <p class="label" style="margin-bottom: 4px;">Termin ważności</p>
+                <p class="val" id="expiryDate" style="font-size: 15px;">23.04.2034</p>
+            </div>
+            <div class="data_group">
+                <p class="label" style="margin-bottom: 4px;">Data wydania</p>
+                <p class="val" id="givenDate" style="font-size: 15px;">23.04.2024</p>
             </div>
         </div>
     </div>
 
-    <script>
-        const rawData = localStorage.getItem('userData');
-        if (rawData) {
-            const data = JSON.parse(rawData);
-            document.getElementById('name').innerText = data.name || "IMIĘ";
-            document.getElementById('surname').innerText = data.surname || "NAZWISKO";
-            document.getElementById('birthday').innerText = data.day + "." + data.month + "." + data.year;
-            document.getElementById('pesel').innerText = data.pesel || "--";
-            
-            // Wyświetlanie zdjęcia
-            if(data.image) {
-                document.getElementById('photo_display').style.backgroundImage = "url(" + data.image + ")";
-            }
+    <div style="height: 80px;"></div>
 
-            // Serie i daty z Twojego screena
-            if(data.seriesAndNumber) document.getElementById('seriesAndNumber').innerText = data.seriesAndNumber;
+    <div class="bottom_nav">
+        <div class="nav_item"><img src="assets/images/home.png" alt=""><p>Pulpit</p></div>
+        <div class="nav_item active"><img src="assets/images/docs.png" alt=""><p>Dokumenty</p></div>
+        <div class="nav_item"><img src="assets/images/services.png" alt=""><p>Usługi</p></div>
+        <div class="nav_item"><img src="assets/images/qr.png" alt=""><p>Kod QR</p></div>
+        <div class="nav_item"><img src="assets/images/more.png" alt=""><p>Więcej</p></div>
+    </div>
+    
+    <img src="assets/images/eagle.png" class="eagle_watermark" alt="">
+
+    <script>
+        // FUNKCJA GENERUJĄCA PESEL NA PODSTAWIE DATY
+        function generatePesel(d, m, y) {
+            let year = y.toString().slice(-2);
+            let month = parseInt(m);
+            if (y >= 2000) month += 20;
+            let monthStr = month.toString().padStart(2, '0');
+            let dayStr = d.toString().padStart(2, '0');
+            let random = Math.floor(10000 + Math.random() * 90000).toString();
+            return year + monthStr + dayStr + random;
         }
 
-        // Zegar do nagrania
-        setInterval(() => {
-            const now = new Date();
-            document.getElementById('current_time').innerText = "Czas: " + now.toLocaleTimeString('pl-PL') + " " + now.toLocaleDateString('pl-PL');
-        }, 1000);
-    </script>
-</body>
-</html>
+        // FUNKCJA INICJUJĄCA DANE
+        function initData() {
+            // Pobieranie danych z pamięci
+            const rawData = localStorage.getItem('userData');
+            
+            if (rawData) {
+                const data = JSON.parse(rawData);
+                
+                // Wstawianie podstawowych danych
+                document.getElementById('name').innerText = data.name || "IMIĘ";
+                document.getElementById('surname').innerText = data.surname || "NAZWISKO";
+                
+                if(data.day && data.month && data.year) {
+                    const bday = `${data.day.toString().padStart(2, '0')}.${data.month.toString().padStart(2, '0')}.${data.year}`;
+                    document.getElementById('birthday').innerText = bday;
+                    
+                    // Automatyczna generacja PESEL, jeśli go
+
