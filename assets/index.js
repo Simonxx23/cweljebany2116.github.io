@@ -1,76 +1,151 @@
-// Czekamy, aż cała strona się załaduje
-document.addEventListener("DOMContentLoaded", () => {
-    const goBtn = document.querySelector(".go");
+// Obsługa rozwijanego menu (Płeć)
+var selector = document.querySelector(".selector_box");
+if (selector) {
+  selector.addEventListener("click", () => {
+    selector.classList.toggle("selector_open");
+  });
+}
 
-    if (goBtn) {
-        goBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            
-            // 1. Pobieranie wartości z pól formularza
-            // Upewnij się, że w index.html masz <input id="name"> itd.
-            const nameField = document.getElementById("name");
-            const surnameField = document.getElementById("surname");
-            const dayField = document.getElementById("day");
-            const monthField = document.getElementById("month");
-            const yearField = document.getElementById("year");
-
-            if (!nameField || !surnameField || !dayField) {
-                alert("Błąd: Nie znaleziono pól formularza. Sprawdź ID w pliku index.html");
-                return;
-            }
-
-            const name = nameField.value.trim().toUpperCase();
-            const surname = surnameField.value.trim().toUpperCase();
-            const d = dayField.value.toString().padStart(2, '0');
-            const m = monthField.value.toString().padStart(2, '0');
-            const y = yearField.value.toString();
-
-            // 2. GENEROWANIE NUMERU PESEL
-            let p_month = parseInt(m);
-            // Dla osób urodzonych w roku 2000 i później, do miesiąca dodaje się 20
-            if (parseInt(y) >= 2000) {
-                p_month += 20;
-            }
-            
-            const p_year = y.slice(-2); // ostatnie dwie cyfry roku
-            const p_month_str = p_month.toString().padStart(2, '0');
-            const p_day = d;
-            
-            // Losujemy końcówkę PESEL (5 cyfr)
-            const randomDigits = Math.floor(10000 + Math.random() * 90000);
-            const generatedPesel = p_year + p_month_str + p_day + randomDigits;
-
-            // 3. POBIERANIE ZDJĘCIA
-            // Skrypt szuka elementu z klasą .upload, który przechowuje wybrane zdjęcie
-            const uploadElement = document.querySelector(".upload");
-            let imageData = "";
-            if (uploadElement) {
-                imageData = uploadElement.getAttribute("selected") || "";
-            }
-
-            // 4. PRZYGOTOWANIE PACZKI DANYCH
-            const userData = {
-                name: name,
-                surname: surname,
-                day: d,
-                month: m,
-                year: y,
-                pesel: generatedPesel,
-                // Generujemy losową serię (3 litery) i numer (6 cyfr)
-                seriesAndNumber: "ABC " + Math.floor(100000 + Math.random() * 900000),
-                expiryDate: "24.04.2036",
-                givenDate: "24.04.2024",
-                image: imageData
-            };
-
-            // 5. ZAPISYWANIE W PAMIĘCI PRZEGLĄDARKI
-            localStorage.setItem('userData', JSON.stringify(userData));
-
-            // 6. PRZEJŚCIE DO KARTY
-            // Upewnij się, że plik z kartą nazywa się dokładnie card.html
-            window.location.href = "card.html";
-        });
-    } else {
-        console.error("Nie znaleziono przycisku z klasą .go");
-    }
+// Usuwanie błędów przy kliknięciu w datę
+document.querySelectorAll(".date_input").forEach((element) => {
+  element.addEventListener("click", () => {
+    const dateBox = document.querySelector(".date");
+    if (dateBox) dateBox.classList.remove("error_shown");
+  });
 });
+
+var sex = "m";
+
+// Wybór opcji płci
+document.querySelectorAll(".selector_option").forEach((option) => {
+  option.addEventListener("click", () => {
+    sex = option.id;
+    const selectedText = document.querySelector(".selected_text");
+    if (selectedText) selectedText.innerHTML = option.innerHTML;
+  });
+});
+
+// Obsługa zdjęcia
+var upload = document.querySelector(".upload");
+var imageInput = document.createElement("input");
+imageInput.type = "file";
+imageInput.accept = "image/*";
+
+// Usuwanie błędów przy polach tekstowych
+document.querySelectorAll(".input_holder").forEach((element) => {
+  var input = element.querySelector(".input");
+  if (input) {
+    input.addEventListener("click", () => {
+      element.classList.remove("error_shown");
+    });
+  }
+});
+
+if (upload) {
+  upload.addEventListener("click", () => {
+    imageInput.click();
+    upload.classList.remove("error_shown");
+  });
+}
+
+// PRZETWARZANIE ZDJĘCIA (Lokalne)
+imageInput.addEventListener("change", (event) => {
+  if (upload) {
+    upload.classList.remove("upload_loaded");
+    upload.classList.add("upload_loading");
+  }
+
+  var file = imageInput.files[0];
+  var reader = new FileReader();
+  
+  reader.onload = (e) => {
+    var url = e.target.result;
+    if (upload) {
+      upload.setAttribute("selected", url);
+      upload.classList.remove("upload_loading");
+      upload.classList.add("upload_loaded");
+      const imgPreview = upload.querySelector(".upload_uploaded");
+      if (imgPreview) imgPreview.src = url;
+    }
+  };
+  reader.readAsDataURL(file);
+});
+
+// PRZYCISK "WEJDŹ" + GENERATOR PESEL
+const goBtn = document.querySelector(".go");
+if (goBtn) {
+  goBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    
+    var empty = [];
+    var data = {};
+
+    data["sex"] = sex;
+    
+    // Zdjęcie
+    if (upload && !upload.hasAttribute("selected")) {
+      empty.push(upload);
+      upload.classList.add("error_shown");
+    } else if (upload) {
+      data["image"] = upload.getAttribute("selected");
+    }
+
+    // Pobieranie daty urodzenia i tworzenie PESEL
+    const day = document.getElementById("day");
+    const month = document.getElementById("month");
+    const year = document.getElementById("year");
+
+    if (isEmpty(day.value) || isEmpty(month.value) || isEmpty(year.value)) {
+        const dateBox = document.querySelector(".date");
+        if (dateBox) dateBox.classList.add("error_shown");
+        empty.push(day);
+    } else {
+        data["day"] = day.value;
+        data["month"] = month.value;
+        data["year"] = year.value;
+
+        // --- DYNAMICZNY PESEL ---
+        const yearStr = year.value.toString();
+        const yearPart = yearStr.slice(-2); // ostatnie dwie cyfry roku
+        const monthPart = month.value.toString().padStart(2, '0');
+        const dayPart = day.value.toString().padStart(2, '0');
+        
+        // Dodajemy 5 losowych cyfr na końcu
+        const randomPart = Math.floor(10000 + Math.random() * 90000); 
+        
+        // Jeśli rok >= 2000, do miesiąca dodajemy 20 (zasada PESEL)
+        let peselMonth = parseInt(monthPart);
+        if (parseInt(yearStr) >= 2000) {
+            peselMonth += 20;
+        }
+        const finalMonth = peselMonth.toString().padStart(2, '0');
+
+        data["pesel"] = yearPart + finalMonth + dayPart + randomPart;
+    }
+
+    // Zbieranie reszty pól
+    document.querySelectorAll(".input_holder").forEach((element) => {
+      var input = element.querySelector(".input");
+      if (input && isEmpty(input.value)) {
+        empty.push(element);
+        element.classList.add("error_shown");
+      } else if (input) {
+        data[input.id] = input.value;
+      }
+    });
+
+    if (empty.length != 0) {
+      empty[0].scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // Zapisujemy wszystko w pamięci przeglądarki
+      localStorage.setItem('userData', JSON.stringify(data));
+      
+      // Przekierowanie do id.html (ekran logowania)
+      window.location.href = "./id.html";
+    }
+  });
+}
+
+function isEmpty(value) {
+  return /^\s*$/.test(value || "");
+}
