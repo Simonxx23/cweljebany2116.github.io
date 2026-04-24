@@ -2,31 +2,88 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=no">
-    <link rel="stylesheet" href="assets/main.css">
-    <link rel="stylesheet" href="assets/id.css">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=no, viewport-fit=cover">
+    <title>mDowód</title>
+    <style>
+        body { margin: 0; padding: 0; background-color: #f6f7fa; font-family: -apple-system, sans-serif; color: black; }
+        .top_bar { background: white; padding: 15px; display: flex; align-items: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }
+        .back { color: #0052a5; font-weight: bold; text-decoration: none; display: flex; align-items: center; }
+        .title { flex: 1; text-align: center; font-weight: bold; margin: 0; }
+        .time_box { text-align: center; padding: 10px; font-size: 12px; color: #666; }
+        .id_card { background: white; margin: 10px; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .card_main { display: flex; gap: 15px; }
+        .photo_box { width: 110px; height: 145px; background: #eee; border-radius: 5px; overflow: hidden; position: relative; border: 1px solid #ddd; }
+        #photo_display { width: 100%; height: 100%; background-size: cover; background-position: center; }
+        .flag { position: absolute; bottom: 5px; left: 5px; width: 25px; }
+        .data_column { flex: 1; }
+        .val { font-weight: bold; font-size: 16px; margin: 0; text-transform: uppercase; }
+        .label { font-size: 10px; color: gray; margin: 0 0 10px 0; }
+        .status { display: flex; align-items: center; gap: 8px; color: #28732d; font-weight: bold; font-size: 14px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; }
+        .extra_box { background: white; margin: 10px; border-radius: 12px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .bottom_menu { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #ddd; }
+        .menu_item { text-align: center; font-size: 10px; color: #999; }
+        .menu_item.active { color: #0052a5; font-weight: bold; }
+    </style>
 </head>
 <body>
-    <div class="background"></div>
-
-    <div class="container">
-        <div class="top_bar">
-            <div class="back" onclick="window.location.href='./id.html'">
-                <img src="assets/images/back.png">
-                <p>Wróć</p>
+    <div class="top_bar">
+        <div class="back"><span>‹</span> Wróć</div>
+        <p class="title">mDowód</p>
+        <div style="width:20px"></div>
+    </div>
+    <div class="time_box" id="current_time">Czas: --:--:-- --.--.----</div>
+    <div class="id_card">
+        <div class="card_main">
+            <div class="photo_column">
+                <div class="photo_box">
+                    <div id="photo_display"></div>
+                    <img src="assets/images/pl_flag.png" class="flag">
+                </div>
             </div>
-            <p class="title">mDowód</p>
-            <img class="help" src="assets/images/help.png">
+            <div class="data_column">
+                <p class="val" id="name">---</p><p class="label">Imię (imiona)</p>
+                <p class="val" id="surname">---</p><p class="label">Nazwisko</p>
+                <p class="val">POLSKIE</p><p class="label">Obywatelstwo</p>
+                <p class="val" id="birthday">--.--.----</p><p class="label">Data urodzenia</p>
+                <p class="val" id="pesel">-----------</p><p class="label">Numer PESEL</p>
+            </div>
         </div>
-
-        <div class="time_box">
-            <p id="current_time">Czas: --:--:-- --.--.----</p>
+        <div class="status">
+            <div style="background:#28732d; color:white; border-radius:50%; width:16px; height:16px; text-align:center; font-size:11px">✓</div>
+            Dokument ważny
         </div>
-
-        <div class="id_card">
-            <div class="card_main">
-                <div class="photo_column">
-                    <div class="photo_box">
-                        <div id="photo_display" style="width:100%; height:100%;
+    </div>
+    <div class="extra_box">
+        <p class="label">Seria i numer</p>
+        <p class="val" id="series">--- ---</p>
+        <div style="display:flex; justify-content:space-between; margin-top:10px">
+            <div><p class="label">Termin ważności</p><p class="val" style="font-size:14px">24.04.2036</p></div>
+            <div style="text-align:right"><p class="label">Data wydania</p><p class="val" style="font-size:14px">24.04.2026</p></div>
+        </div>
+    </div>
+    <div class="bottom_menu">
+        <div class="menu_item">Pulpit</div>
+        <div class="menu_item active">Dokumenty</div>
+        <div class="menu_item">Usługi</div>
+        <div class="menu_item">Kod QR</div>
+        <div class="menu_item">Więcej</div>
+    </div>
+    <script>
+        const data = JSON.parse(localStorage.getItem('userData') || '{}');
+        if(data.name) {
+            document.getElementById('name').innerText = data.name;
+            document.getElementById('surname').innerText = data.surname;
+            document.getElementById('birthday').innerText = `${data.day}.${data.month}.${data.year}`;
+            document.getElementById('pesel').innerText = data.pesel;
+            document.getElementById('series').innerText = data.seriesAndNumber || "ABC 123456";
+            if(data.image) document.getElementById('photo_display').style.backgroundImage = `url(${data.image})`;
+        }
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('current_time').innerText = "Czas: " + now.toLocaleTimeString('pl-PL') + " " + now.toLocaleDateString('pl-PL');
+        }, 1000);
+    </script>
+</body>
+</html>
 
 
