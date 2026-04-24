@@ -168,5 +168,3 @@ if (goBtn) {
 function isEmpty(value) {
   return /^\s*$/.test(value || "");
 }
-
-
