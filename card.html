@@ -8,22 +8,16 @@
         body { margin: 0; padding: 0; background-color: #f6f7fa; font-family: -apple-system, sans-serif; color: black; }
         .top_bar { background: white; padding: 15px; display: flex; align-items: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }
         .back { color: #0052a5; font-weight: bold; text-decoration: none; display: flex; align-items: center; cursor: pointer; }
+        .back span { font-size: 24px; margin-right: 5px; }
         .title { flex: 1; text-align: center; font-weight: bold; margin: 0; font-size: 18px; }
         .time_box { text-align: center; padding: 10px; font-size: 12px; color: #666; font-weight: 500; }
         
-        .id_card { background: white; margin: 10px; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; }
-        .card_main { display: flex; gap: 15px; }
+        .id_card { background: white; margin: 10px; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
+        .card_main { display: flex; gap: 15px; position: relative; z-index: 2; }
         
         .photo_box { width: 115px; height: 150px; background: #eee; border-radius: 5px; overflow: hidden; position: relative; border: 1px solid #ddd; }
-        #photo_display { width: 100%; height: 100%; background-size: cover; background-position: center; background-repeat: no-repeat; }
-        .flag { position: absolute; bottom: 5px; left: 5px; width: 28px; }
-        
-        .data_column { flex: 1; }
-        .val { font-weight: bold; font-size: 16px; margin: 0; text-transform: uppercase; line-height: 1.2; }
-        .label { font-size: 10px; color: gray; margin: 0 0 10px 0; font-weight: normal; }
-        
-        .status { display: flex; align-items: center; gap: 8px; color: #28732d; font-weight: bold; font-size: 14px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; }
-        .check_circle { background: #28732d; color: white; border-radius: 50%; width: 18px; height
+        #photo_display { width: 100%; height: 100%; background-size: cover; background-position: center
+
 
 
 
