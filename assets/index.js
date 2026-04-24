@@ -1,4 +1,4 @@
-// --- 1. ZMIENNE I OBSŁUGA INTERFEJSU ---
+// Obsługa rozwijanego menu (Płeć)
 var selector = document.querySelector(".selector_box");
 if (selector) {
   selector.addEventListener("click", () => {
@@ -6,6 +6,7 @@ if (selector) {
   });
 }
 
+// Usuwanie błędów przy kliknięciu w datę
 document.querySelectorAll(".date_input").forEach((element) => {
   element.addEventListener("click", () => {
     const dateBox = document.querySelector(".date");
@@ -15,6 +16,7 @@ document.querySelectorAll(".date_input").forEach((element) => {
 
 var sex = "m";
 
+// Wybór opcji płci
 document.querySelectorAll(".selector_option").forEach((option) => {
   option.addEventListener("click", () => {
     sex = option.id;
@@ -23,12 +25,13 @@ document.querySelectorAll(".selector_option").forEach((option) => {
   });
 });
 
-// --- 2. OBSŁUGA ZDJĘCIA ---
+// Obsługa zdjęcia
 var upload = document.querySelector(".upload");
 var imageInput = document.createElement("input");
 imageInput.type = "file";
 imageInput.accept = "image/*";
 
+// Usuwanie błędów przy polach tekstowych
 document.querySelectorAll(".input_holder").forEach((element) => {
   var input = element.querySelector(".input");
   if (input) {
@@ -45,13 +48,16 @@ if (upload) {
   });
 }
 
+// PRZETWARZANIE ZDJĘCIA (Lokalne)
 imageInput.addEventListener("change", (event) => {
   if (upload) {
     upload.classList.remove("upload_loaded");
     upload.classList.add("upload_loading");
   }
+
   var file = imageInput.files[0];
   var reader = new FileReader();
+  
   reader.onload = (e) => {
     var url = e.target.result;
     if (upload) {
@@ -65,40 +71,7 @@ imageInput.addEventListener("change", (event) => {
   reader.readAsDataURL(file);
 });
 
-// --- 3. FUNKCJA ZAPAMIĘTYWANIA (POWRÓT NA STRONĘ) ---
-document.addEventListener('DOMContentLoaded', () => {
-    const savedData = localStorage.getItem('userData');
-    if (savedData) {
-        const data = JSON.parse(savedData);
-
-        // Wypełnianie pól tekstowych
-        Object.keys(data).forEach(key => {
-            const input = document.getElementById(key);
-            if (input && key !== 'image' && key !== 'sex') {
-                input.value = data[key];
-            }
-        });
-
-        // Przywracanie płci
-        if (data.sex) {
-            sex = data.sex;
-            const selectedText = document.querySelector(".selected_text");
-            if (selectedText) {
-                selectedText.innerHTML = (sex === 'm') ? 'Mężczyzna' : 'Kobieta';
-            }
-        }
-
-        // Przywracanie zdjęcia
-        if (data.image && upload) {
-            upload.setAttribute("selected", data.image);
-            upload.classList.add("upload_loaded");
-            const imgPreview = upload.querySelector(".upload_uploaded");
-            if (imgPreview) imgPreview.src = data.image;
-        }
-    }
-});
-
-// --- 4. PRZYCISK "WEJDŹ" + GENERATOR PESEL ---
+// PRZYCISK "WEJDŹ" + GENERATOR PESEL
 const goBtn = document.querySelector(".go");
 if (goBtn) {
   goBtn.addEventListener("click", (e) => {
@@ -106,9 +79,10 @@ if (goBtn) {
     
     var empty = [];
     var data = {};
+
     data["sex"] = sex;
     
-    // Walidacja zdjęcia
+    // Zdjęcie
     if (upload && !upload.hasAttribute("selected")) {
       empty.push(upload);
       upload.classList.add("error_shown");
@@ -116,35 +90,40 @@ if (goBtn) {
       data["image"] = upload.getAttribute("selected");
     }
 
-    // Pobieranie daty i tworzenie PESEL
-    const dayInput = document.getElementById("day");
-    const monthInput = document.getElementById("month");
-    const yearInput = document.getElementById("year");
+    // Pobieranie daty urodzenia i tworzenie PESEL
+    const day = document.getElementById("day");
+    const month = document.getElementById("month");
+    const year = document.getElementById("year");
 
-    if (isEmpty(dayInput.value) || isEmpty(monthInput.value) || isEmpty(yearInput.value)) {
+    if (isEmpty(day.value) || isEmpty(month.value) || isEmpty(year.value)) {
         const dateBox = document.querySelector(".date");
         if (dateBox) dateBox.classList.add("error_shown");
-        empty.push(dayInput);
+        empty.push(day);
     } else {
-        data["day"] = dayInput.value;
-        data["month"] = monthInput.value;
-        data["year"] = yearInput.value;
+        data["day"] = day.value;
+        data["month"] = month.value;
+        data["year"] = year.value;
 
-        // Generator PESEL zgodny z datą
-        const yearStr = yearInput.value.toString();
-        const yearPart = yearStr.slice(-2);
-        const monthPart = monthInput.value.toString().padStart(2, '0');
-        const dayPart = dayInput.value.toString().padStart(2, '0');
+        // --- DYNAMICZNY PESEL ---
+        const yearStr = year.value.toString();
+        const yearPart = yearStr.slice(-2); // ostatnie dwie cyfry roku
+        const monthPart = month.value.toString().padStart(2, '0');
+        const dayPart = day.value.toString().padStart(2, '0');
+        
+        // Dodajemy 5 losowych cyfr na końcu
         const randomPart = Math.floor(10000 + Math.random() * 90000); 
         
+        // Jeśli rok >= 2000, do miesiąca dodajemy 20 (zasada PESEL)
         let peselMonth = parseInt(monthPart);
-        if (parseInt(yearStr) >= 2000) peselMonth += 20;
+        if (parseInt(yearStr) >= 2000) {
+            peselMonth += 20;
+        }
         const finalMonth = peselMonth.toString().padStart(2, '0');
 
         data["pesel"] = yearPart + finalMonth + dayPart + randomPart;
     }
 
-    // Reszta pól (imię, nazwisko, itd.)
+    // Zbieranie reszty pól
     document.querySelectorAll(".input_holder").forEach((element) => {
       var input = element.querySelector(".input");
       if (input && isEmpty(input.value)) {
@@ -158,8 +137,10 @@ if (goBtn) {
     if (empty.length != 0) {
       empty[0].scrollIntoView({ behavior: 'smooth' });
     } else {
-      // Zapis i przejście
+      // Zapisujemy wszystko w pamięci przeglądarki
       localStorage.setItem('userData', JSON.stringify(data));
+      
+      // Przekierowanie do id.html (ekran logowania)
       window.location.href = "./id.html";
     }
   });
