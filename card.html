@@ -50,26 +50,46 @@
             </div>
         </div>
 
-        <div style="background: white; margin: 15px; padding: 15px; border-radius: 10px; color: black;">
+        <div style="background: white; margin: 15px; padding: 15px; border-radius: 10px; color: black; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
             <p style="font-size: 10px; color: gray; margin: 0;">Seria i numer</p>
             <p id="seriesAndNumber" style="font-size: 20px; font-weight: bold; margin: 5px 0 10px 0;">ABC 123456</p>
             <div style="display: flex; justify-content: space-between; border-top: 1px solid #f0f0f0; padding-top: 10px;">
                 <div>
                     <p style="font-size: 10px; color: gray; margin: 0;">Termin ważności</p>
-                    <p id="expiryDate" style="font-weight: bold; margin: 0;">--.--.----</p>
+                    <p id="expiryDate" style="font-weight: bold; margin: 0;">23.04.2034</p>
                 </div>
                 <div style="text-align: right;">
                     <p style="font-size: 10px; color: gray; margin: 0;">Data wydania</p>
-                    <p id="givenDate" style="font-weight: bold; margin: 0;">--.--.----</p>
+                    <p id="givenDate" style="font-weight: bold; margin: 0;">23.04.2024</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // FUNKCJA GENERUJĄCA PESEL NA PODSTAWIE DATY
-        function generatePesel(d, m, y) {
-            let year = y.toString().slice(-2);
-            let month = parseInt(m);
-            if (y >=
+        const rawData = localStorage.getItem('userData');
+        if (rawData) {
+            const data = JSON.parse(rawData);
+            document.getElementById('name').innerText = data.name || "IMIĘ";
+            document.getElementById('surname').innerText = data.surname || "NAZWISKO";
+            document.getElementById('birthday').innerText = data.day + "." + data.month + "." + data.year;
+            document.getElementById('pesel').innerText = data.pesel || "--";
+            
+            // Wyświetlanie zdjęcia
+            if(data.image) {
+                document.getElementById('photo_display').style.backgroundImage = "url(" + data.image + ")";
+            }
+
+            // Serie i daty z Twojego screena
+            if(data.seriesAndNumber) document.getElementById('seriesAndNumber').innerText = data.seriesAndNumber;
+        }
+
+        // Zegar do nagrania
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('current_time').innerText = "Czas: " + now.toLocaleTimeString('pl-PL') + " " + now.toLocaleDateString('pl-PL');
+        }, 1000);
+    </script>
+</body>
+</html>
 
