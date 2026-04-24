@@ -1,51 +1,37 @@
-const goBtn = document.querySelector(".go");
+document.querySelector(".go").addEventListener("click", (e) => {
+    e.preventDefault();
 
-if (goBtn) {
-    goBtn.addEventListener("click", (e) => {
-        e.preventDefault();
+    // 1. Pobieranie danych z pól formularza
+    const name = document.getElementById("name").value;
+    const surname = document.getElementById("surname").value;
+    const d = document.getElementById("day").value;
+    const m = document.getElementById("month").value;
+    const y = document.getElementById("year").value;
 
-        // Pobieranie wartości z pól
-        const name = document.getElementById("name").value;
-        const surname = document.getElementById("surname").value;
-        const day = document.getElementById("day").value;
-        const month = document.getElementById("month").value;
-        const year = document.getElementById("year").value;
+    // 2. GENEROWANIE PESEL (automatyczne na podstawie daty)
+    let p_month = parseInt(m);
+    // Dla osób urodzonych po 2000 roku dodajemy 20 do miesiąca (system PESEL)
+    if (parseInt(y) >= 2000) p_month += 20;
+    
+    const p_year = y.toString().slice(-2); // ostatnie 2 cyfry roku
+    const p_day = d.padStart(2, '0');
+    const p_month_str = p_month.toString().padStart(2, '0');
+    const randomDigits = Math.floor(10000 + Math.random() * 90000); // losowa końcówka
+    
+    const generatedPesel = p_year + p_month_str + p_day + randomDigits;
 
-        // --- GENERATOR PESEL ---
-        let p_month = parseInt(month);
-        let p_year = year.toString().slice(-2); // ostatnie 2 cyfry roku
-        
-        // Jeśli ktoś urodził się po 2000 roku, do miesiąca dodajemy 20
-        if (parseInt(year) >= 2000) {
-            p_month = p_month + 20;
-        }
-
-        const p_day = day.toString().padStart(2, '0');
-        const p_month_str = p_month.toString().padStart(2, '0');
-        
-        // Losowe 5 cyfr na końcu PESELU
-        const randomDigits = Math.floor(10000 + Math.random() * 90000);
-        
-        const generatedPesel = p_year + p_month_str + p_day + randomDigits;
-        // ------------------------
-
-        // Przygotowanie paczki danych
-        const userData = {
-            name: name,
-            surname: surname,
-            day: day,
-            month: month,
-            year: year,
-            pesel: generatedPesel, // Tutaj trafia gotowy PESEL
-            seriesAndNumber: "ABC " + Math.floor(100000 + Math.random() * 900000),
-            image: document.querySelector(".upload").getAttribute("selected")
-        };
-
-        // Zapisywanie do pamięci telefonu
-        localStorage.setItem('userData', JSON.stringify(userData));
-
-        // Przejście do karty
-        window.location.href = "card.html";
-    });
-}
+    // 3. PRZYGOTOWANIE PACZKI DANYCH
+    const userData = {
+        name: name,
+        surname: surname,
+        day: d,
+        month: m,
+        year: y,
+        pesel: generatedPesel,
+        // Generujemy losową serię i numer dowodu dla realizmu
+        seriesAndNumber: "ABC " + Math.floor(100000 + Math.random() * 900000),
+        expiryDate: "24.04.2036",
+        givenDate: "24.04.2024",
+        // Pobieramy zdjęcie, które wgrałeś w formularzu
+        image: document.querySelector(".upload").getAttribute("selected
 
