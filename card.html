@@ -7,110 +7,101 @@
     <link rel="stylesheet" href="assets/main.css">
     <link rel="stylesheet" href="assets/id.css">
     <style>
-        /* Zdjęcie zachowuje proporcje i nie rozciąga się */
+        /* To dodajemy, żeby zdjęcie nie było rozciągnięte, ale pasowało do Twojej ramki */
         #photo_display {
             width: 100%;
             height: 100%;
-            background-size: contain; /* Kluczowa zmiana: brak rozciągania */
+            background-size: contain;
             background-position: center bottom;
             background-repeat: no-repeat;
         }
-        .val { font-weight: bold; text-transform: uppercase; margin: 0; }
-        .label { font-size: 10px; color: #767676; margin-bottom: 8px; text-transform: none; }
-        .data_row { margin-bottom: 2px; }
     </style>
 </head>
-<body style="background-color: #f5f6fb; font-family: sans-serif;">
+<body>
 
-    <div class="top_bar" style="background: white; padding: 15px 20px; display: flex; align-items: center; border-bottom: 1px solid #e0e0e0;">
-        <div onclick="window.location.href='./id.html'" style="cursor:pointer; color: #0052a5; font-weight: bold; display: flex; align-items: center;">
-            <span style="font-size: 24px; margin-right: 8px;">‹</span> Wróć
-        </div>
-        <p style="flex-grow: 1; text-align: center; font-weight: 600; margin: 0; font-size: 17px;">mDowód</p>
-        <div style="font-size: 22px; color: #0052a5;">ⓘ</div>
-    </div>
+    <div class="background"></div>
 
-    <div style="text-align: center; padding: 12px; color: #444; font-size: 13px; font-weight: 500;">
-        <p id="current_time">Czas: --:--:-- --.--.----</p>
-    </div>
-
-    <div style="margin: 0 15px; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden;">
-        <div style="padding: 20px; display: flex; gap: 20px;">
-            
-            <div style="width: 115px; height: 150px; background: #f9f9f9; position: relative; border-radius: 4px; overflow: hidden; border: 1px solid #eee;">
-                <div id="photo_display"></div>
-                <img src="assets/images/pl_flag.png" style="position: absolute; bottom: 8px; left: 8px; width: 25px;">
+    <div class="container">
+        <div class="top_bar">
+            <div class="back" onclick="window.location.href='./id.html'">
+                <img src="assets/images/back.png">
+                <p>Wróć</p>
             </div>
+            <p class="title">mDowód</p>
+            <img class="help" src="assets/images/help.png">
+        </div>
 
-            <div style="flex-grow: 1;">
-                <div class="data_row">
-                    <p class="val" id="name" style="font-size: 17px;">IMIĘ</p>
+        <div class="time_box">
+            <p id="current_time">Czas: --:--:-- --.--.----</p>
+        </div>
+
+        <div class="id_card">
+            <div class="card_main">
+                <div class="photo_column">
+                    <div class="photo_box">
+                        <div id="photo_display"></div>
+                    </div>
+                    <img class="flag" src="assets/images/pl_flag.png">
+                    <img class="eagle" src="assets/images/eagle.png">
+                </div>
+
+                <div class="data_column">
+                    <p class="val" id="name">IMIĘ</p>
                     <p class="label">Imię (imiona)</p>
-                </div>
 
-                <div class="data_row">
-                    <p class="val" id="surname" style="font-size: 17px;">NAZWISKO</p>
+                    <p class="val" id="surname">NAZWISKO</p>
                     <p class="label">Nazwisko</p>
-                </div>
 
-                <div class="data_row">
                     <p class="val">POLSKIE</p>
                     <p class="label">Obywatelstwo</p>
-                </div>
 
-                <div class="data_row">
-                    <p class="val" id="birthday">01.01.1990</p>
+                    <p class="val" id="birthday">--.--.----</p>
                     <p class="label">Data urodzenia</p>
-                </div>
 
-                <div class="data_row">
-                    <p class="val" id="pesel">00000000000</p>
+                    <p class="val" id="pesel">--</p>
                     <p class="label">Numer PESEL</p>
                 </div>
             </div>
-        </div>
 
-        <div style="background: #eaf5ea; color: #28732d; padding: 12px 20px; display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px;">
-            <span style="background: #28732d; color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px;">✓</span>
-            Dokument ważny
-        </div>
-    </div>
-
-    <div style="margin: 15px; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-        <div style="margin-bottom: 18px;">
-            <p class="label" style="margin-bottom: 4px;">Seria i numer</p>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <p class="val" id="seriesAndNumber" style="font-size: 17px;">--- ------</p>
-                <span style="color: #0052a5; font-weight: bold; background: #f0f4f9; padding: 4px 12px; border-radius: 6px; font-size: 12px;">Kopiuj</span>
+            <div class="status_row">
+                <img src="assets/images/check.png">
+                <p>Dokument ważny</p>
             </div>
         </div>
 
-        <div style="display: flex; justify-content: space-between; border-top: 1px solid #f0f0f0; padding-top: 15px;">
-            <div>
-                <p class="label" style="margin-bottom: 4px;">Termin ważności</p>
-                <p class="val" id="expiryDate" style="font-size: 15px;">--.--.----</p>
-            </div>
-            <div style="text-align: right;">
-                <p class="label" style="margin-bottom: 4px;">Data wydania</p>
-                <p class="val" id="givenDate" style="font-size: 15px;">--.--.----</p>
+        <div class="extra_data_box" style="margin: 20px; padding: 15px; background: white; border-radius: 10px;">
+            <p class="label">Seria i numer</p>
+            <p class="val" id="seriesAndNumber" style="font-size: 18px; margin-bottom: 10px;">--- ---</p>
+            
+            <div style="display: flex; justify-content: space-between;">
+                <div>
+                    <p class="label">Termin ważności</p>
+                    <p class="val" id="expiryDate">--.--.----</p>
+                </div>
+                <div>
+                    <p class="label">Data wydania</p>
+                    <p class="val" id="givenDate">--.--.----</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <div style="position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; box-shadow: 0 -2px 10px rgba(0,0,0,0.03);">
-        <div style="text-align: center; color: #777; font-size: 11px;"><div style="font-size: 22px; margin-bottom: 4px;">🏠</div>Pulpit</div>
-        <div style="text-align: center; color: #0052a5; font-size: 11px; font-weight: 600;"><div style="font-size: 22px; margin-bottom: 4px;">🪪</div>Dokumenty</div>
-        <div style="text-align: center; color: #777; font-size: 11px;"><div style="font-size: 22px; margin-bottom: 4px;">📂</div>Usługi</div>
-        <div style="text-align: center; color: #777; font-size: 11px;"><div style="font-size: 22px; margin-bottom: 4px;">🔳</div>Kod QR</div>
-        <div style="text-align: center; color: #777; font-size: 11px;"><div style="font-size: 22px; margin-bottom: 4px;">⋯</div>Więcej</div>
+    <div class="bottom_menu">
+        <div class="menu_item"><img src="assets/images/home.png"><p>Pulpit</p></div>
+        <div class="menu_item active"><img src="assets/images/docs.png"><p>Dokumenty</p></div>
+        <div class="menu_item"><img src="assets/images/services.png"><p>Usługi</p></div>
+        <div class="menu_item"><img src="assets/images/qr.png"><p>Kod QR</p></div>
+        <div class="menu_item"><img src="assets/images/more.png"><p>Więcej</p></div>
     </div>
 
     <script>
+        // SKRYPT ŁĄCZĄCY TWOJE STARE STYLE Z NOWYMI DANYMI
         document.addEventListener('DOMContentLoaded', () => {
             const rawData = localStorage.getItem('userData');
             if (rawData) {
                 const data = JSON.parse(rawData);
 
+                // Wypełniamy pola Twoimi ID
                 document.getElementById('name').innerText = data.name || "";
                 document.getElementById('surname').innerText = data.surname || "";
                 document.getElementById('pesel').innerText = data.pesel || "";
@@ -123,21 +114,21 @@
                     document.getElementById('photo_display').style.backgroundImage = `url(${data.image})`;
                 }
 
-                // Pola realistyczne
+                // Dodatkowe pola realistyczne
                 if (data.seriesAndNumber) document.getElementById('seriesAndNumber').innerText = data.seriesAndNumber;
                 if (data.expiryDate) document.getElementById('expiryDate').innerText = data.expiryDate;
                 if (data.givenDate) document.getElementById('givenDate').innerText = data.givenDate;
             }
         });
 
+        // Dynamiczny zegar
         function updateTime() {
             const now = new Date();
-            const timeStr = now.toLocaleTimeString('pl-PL');
-            const dateStr = now.toLocaleDateString('pl-PL');
-            document.getElementById('current_time').innerText = `Czas: ${timeStr} ${dateStr}`;
+            document.getElementById('current_time').innerText = `Czas: ${now.toLocaleTimeString('pl-PL')} ${now.toLocaleDateString('pl-PL')}`;
         }
         setInterval(updateTime, 1000);
         updateTime();
     </script>
 </body>
 </html>
+
